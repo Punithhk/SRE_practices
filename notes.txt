@@ -1,0 +1,3 @@
+Compare the no of req/exceptions 
+
+rate(reqsno_total[1m])/rate(exceptions_total[1m])

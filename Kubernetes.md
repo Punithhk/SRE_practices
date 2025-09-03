@@ -1,0 +1,223 @@
+Pods 
+
+ 486  kubectl create deployment firstpod --image=registry.k8s.io/e2e-test-images/agnhost:2.39 -- /agnhost netexec --http-port=8080
+  487  kubectl get deployments
+  488  kubectl get pods
+  489  kubectl get events
+  490  kubectl config vie
+  491  kubectl config view
+  492  kubectl get pods
+  493  kubectl logs firstpod-6cf54d7f76-pm4mn
+
+
+Service - to expose the pods to external IP 
+ 495  kubectl expose deployment firstpod --type=LoadBalancer --port=8080
+  496  kubectl get services
+  497  minikube service firstpod
+
+Addons 
+
+ minikube addons list
+  500  minikube addon enable metrics-server
+  501  minikube addons enable metrics-server
+  502  kubectl get pod,svc -n kube-system
+  503  kubectl top pods
+minikube addons disable metrics-server
+
+Stopping 
+
+kubectl delete service hello-node
+kubectl delete deployment hello-node
+minikube stop
+# Optional
+minikube delete
+
+---------------------------
+
+deploying using kubectl
+
+kubectl create deployment kfirst --image=gcr.io/google-samples/kubernetes-bootcamp:v1
+kubectl proxy
+
+Get the podname 
+export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+echo Name of the Pod: $POD_NAME
+
+Access the pod names using - 
+http://localhost:8001/api/v1/namespaces/default/pods/kfirst-d646fb8cb-mddbh:8080/proxy/
+
+
+each Pod in a Kubernetes cluster has a unique IP address, even Pods on the same Node,
+ so there needs to be a way of automatically reconciling changes among Pods so that your applications continue to function.
+
+A Kubernetes Service is an abstraction layer which defines a logical set of Pods and enables external traffic exposure, load balancing and service discovery for those Pods.
+
+Using service to expose your app. Specify the type in the spec  
+- Cluster 
+- Nodeport -  Exposes the Service on the same port of each selected Node in the cluster using NAT. Makes a Service accessible from outside the cluster using NodeIP:NodePort. Superset of ClusterIP.
+- LoadBalancer - Creates an external load balancer in the current cloud (if supported) and assigns a fixed, external IP to the Service. Superset of NodePort.
+- ExternalName -  Maps the Service to the contents of the externalName field (e.g. foo.bar.example.com), by returning a CNAME record with its value. No proxying of any kind is set up. This type requires v1.7 or higher of kube-dns, or CoreDNS version 0.0.8 or higher.
+
+
+To expose the deployment to external traffic, we'll use the kubectl expose command with the --type=NodePort option
+kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+
+export NODE_PORT="$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')"
+echo "NODE_PORT=$NODE_PORT"
+
+curl http://"$(minikube ip):$NODE_PORT"
+
+kubectl get services -l app=kubernetes-bootcamp
+
+  538  minikube start
+  539  minikube
+  540  minikube service
+  541  kubectl expose deployment firstpod --type=LoadBalancer --port=8080
+  542  kubectl get deployment
+  543  kubectl expose deployment/firstpod --type="NodePort" --port 8080
+  544  kubectl get services
+  545  kubectl describe services/firstpod
+  546  minikube service firstpod --url
+  547  minikube dashboard --url
+  548  kubectl labels pods "$POD_NAME" version=v1
+  549  kubectl label pods "$POD_NAME" version=v1
+  550  kubectl label pods "check" version=v1
+  551* kubectl get pods
+  552  kubectl label pods "kfirst-d646fb8cb-mddbh" version=v1
+  553  kubectl describe pods "kfirst-d646fb8cb-mddbh"
+  554  kubectl get pods -l version=v1
+  555  kubectl get services "kfirst-d646fb8cb-mddbh"
+  556  kubectl get services
+  557  kubectl get services -l app="kfirst"
+  558  kubectl get deployment
+  559  kubectl expose deployment/kfirst --type="NodePort" --port 8080
+  560  kubectl describe services/kfirst
+  561  kubectl get services/kfirst
+  562  kubectl get services
+  563  minikube service
+  564  minikube service --all
+
+Replica sets 
+
+ kubectl get services/kfirst
+  569  kubectl delete service "kfirst""
+  570  kubectl delete service "kfirst"
+  571  kubectl get services/kfirst
+  572  kubectl expose deployment/kubernetes-bootcamp --type="LoadBalancer" --port 8080
+  573  kubectl expose deployment/kfirst --type="LoadBalancer" --port 8080
+  574  kubectl get deployments
+  575  kubectl get rs
+  576  kubectl scale deployments/kfirst --replicas=4
+  577  kubectl get rs
+  578  kubectl get deployments
+  579  kubectl get pods -o wide
+  580  kubectl describe deployments/kfirst
+  581  kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}'
+  582  kubectl get services/kfirst -o go-template='{{(index .spec.ports 0).nodePort}}'
+  583  minikube ip
+  584  curl http://192.168.49.2:32035
+
+Rolling Update
+
+ By default, the maximum number of Pods that can be unavailable during the update and the maximum number of new Pods that can be created, is one. Both options can be configured to either numbers or percentages (of Pods). In Kubernetes, updates are versioned and any Deployment update can be reverted to a previous (stable) version
+
+ 587  kubectl describe pods
+  588  kubectl set image deployments/kfirst kubernetes-bootcamp=docker.io/jocatalin/kubernetes-bootcamp:v2
+  589  kubectl get pods
+  590  curl http://192.168.49.2:32035
+  591  kubectl get pods
+  592  minikube ip
+  593  minikube service --all
+  594  kubectl get deployments
+  595  kubectl get pods
+  596  kubectl set image deployments/kfirst  kubernetes-bootcamp=gcr.io/google-samples/kubernetes-bootcamp:v10
+  597  kubectl get deployments
+  598  kubectl get pods
+  599  kubectl decscibe pods
+  600  kubectl decscribe pods
+  601  kubectl describe 
+  602  kubectl get pods
+  603  kubectl describe pods
+  604  kubectl get pods
+  605  kubectl rollout undo deployments/kfirst
+  606  kubectl get version -l kfirst
+  607  kubectl get pods kfirst -l version
+  608  kubectl get pods
+  609  kubectl delete deployments/kubernetes-bootcamp services/kubernetes-bootcamp
+
+kubectl rollout status deployment/kfirst
+kubectl apply -f "path"
+
+
+The pod-template-hash label is added by the Deployment controller to every ReplicaSet that a Deployment creates or adopts.
+
+This label ensures that child ReplicaSets of a Deployment do not overlap. It is generated by hashing the PodTemplate of the ReplicaSet and using the resulting hash as the label value that is added to the ReplicaSet selector, Pod template labels, and in any existing Pods that the ReplicaSet might have.
+
+Note:
+A Deployment's rollout is triggered if and only if the Deployment's Pod template (that is, .spec.template) is changed, for example if the labels or container images of the template are updated. Other updates, such as scaling the Deployment, do not trigger a rollout.
+
+
+Note:
+Kubernetes doesn't count terminating Pods when calculating the number of availableReplicas, which must be between replicas - maxUnavailable and replicas + maxSurge. As a result, you might notice that there are more Pods than expected during a rollout, and that the total resources consumed by the Deployment is more than replicas + maxSurge until the terminationGracePeriodSeconds of the terminating Pods expires.
+
+For example, suppose you create a Deployment to create 5 replicas of nginx:1.14.2, but then update the Deployment to create 5 replicas of nginx:1.16.1, when only 3 replicas of nginx:1.14.2 had been created. In that case, the Deployment immediately starts killing the 3 nginx:1.14.2 Pods that it had created, and starts creating nginx:1.16.1 Pods. It does not wait for the 5 replicas of nginx:1.14.2 to be created before changing course.
+
+Label selector update - not preffered 
+
+Selector additions require the Pod template labels in the Deployment spec to be updated with the new label too, otherwise a validation error is returned. This change is a non-overlapping one, meaning that the new selector does not select ReplicaSets and Pods created with the old selector, resulting in orphaning all old ReplicaSets and creating a new ReplicaSet.
+Selector updates changes the existing value in a selector key -- result in the same behavior as additions.
+Selector removals removes an existing key from the Deployment selector -- do not require any changes in the Pod template labels. Existing ReplicaSets are not orphaned, and a new ReplicaSet is not created, but note that the removed label still exists in any existing Pods and ReplicaSets.
+
+Rolling back a deployment 
+
+Revision history limit 
+(maxUnavailable specifically) - imagepullbackoff error limit 
+
+RollingUpdateStrategy
+
+
+Auto scaling - 
+kubectl autoscale deployment/nginx-deployment --min=10 --max=15 --cpu-percent=80
+
+ 612  kubectl rollout status deployment/kfirst
+  613  kubectl get pods --show-labels
+  614  ls --l
+  615  ls -l
+  616  mkdir kub-practice
+  617  cd kub-practice/
+  618  vi nginx-deployment.yaml
+  619  kubectl apply -f nginx-deployment.yaml
+  620  kubectl rollout status deployment/nginx-deployment
+  621  kubectl get rs
+  622  kubectl get pods --show-labels
+  623  kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1
+  624  kubectl edit deployment/nginx-deployment
+  625  kubectl rollout status deployment/nginx-deployment
+  626  kubectl get deployments
+  627  kubectl get rs
+  628  kubectl get pods
+  629  kubectl describe deployments
+  630  kubectl rollout history deployment/kfirst
+  631  kubectl rollout history deployment/nginx
+  632  kubectl rollout history deployment/nginx-deployment
+  633  kubectl annotate deployment/nginx-deployment kubernetes.io/change-cause="image updated to 1.16.1"
+  634  kubectl rollout history deployment/nginx-deployment
+  635  kubectl rollout history deployment/nginx-deployment --revision=2
+  636  kubectl rollout undo deployment/nginx-deployment
+  637  kubectl rollout history deployment/nginx-deployment
+  638  kubectl describe deployments
+  639  kubectl rollout undo deployment/nginx-deployment --to-revision=2
+  640  kubectl describe deployments
+  641  kubectl rollout history deployment/nginx-deployment
+  642  kubectl scale deployment/nginx-deployment --replicas=10
+  643  kubectl rollout status deployment/nginx-deployment
+
+
+Proportional scaling
+RollingUpdate Deployments support running multiple versions of an application at the same time. When you or an autoscaler scales a RollingUpdate Deployment that is in the middle of a rollout (either in progress or paused), the Deployment controller balances the additional replicas in the existing active ReplicaSets (ReplicaSets with Pods) in order to mitigate risk. This is called proportional scaling.
+
+maxSurge, maxUnavailable 
+
+Then a new scaling request for the Deployment comes along. The autoscaler increments the Deployment replicas to 15. The Deployment controller needs to decide where to add these new 5 replicas. If you weren't using proportional scaling, all 5 of them would be added in the new ReplicaSet. With proportional scaling, you spread the additional replicas across all ReplicaSets. Bigger proportions go to the ReplicaSets with the most replicas and lower proportions go to ReplicaSets with less replicas. Any leftovers are added to the ReplicaSet with the most replicas. ReplicaSets with zero replicas are not scaled up.
+
+Pausing and Resuming a rollout of s 
