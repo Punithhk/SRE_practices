@@ -7,5 +7,11 @@ pipeline {
       }
     }
 
+    stage('Checkfiles') {
+      steps {
+        sh 'ls -al'
+      }
+    }
+
   }
 }
