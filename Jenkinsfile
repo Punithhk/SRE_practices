@@ -8,8 +8,19 @@ pipeline {
     }
 
     stage('Checkfiles') {
-      steps {
-        sh 'dir'
+      parallel {
+        stage('Checkfiles') {
+          steps {
+            sh 'dir'
+          }
+        }
+
+        stage('npm initialize') {
+          steps {
+            sh 'cd backend/ && npm install '
+          }
+        }
+
       }
     }
 
