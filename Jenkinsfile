@@ -9,7 +9,7 @@ pipeline {
 
     stage('Checkfiles') {
       steps {
-        sh 'ls -al'
+        sh 'dir'
       }
     }
 
