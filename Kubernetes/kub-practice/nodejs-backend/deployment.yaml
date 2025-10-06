@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-kube-app-deployment
+  labels:
+    app: node-kube-app
+spec:
+  replicas: 3 # Run 3 instances (Pods) of your application
+  selector:
+    matchLabels:
+      app: node-kube-app
+  template:
+    metadata:
+      labels:
+        app: node-kube-app
+    spec:
+      containers:
+      - name: node-kube-app-container
+        image: punith168/node-check:v1 # Use your pushed image
+        ports:
+        - containerPort: 8000 # The port your Node.js app listens on
+        resources: # Define resource limits/requests for reliability
+          requests:
+            cpu: "100m" # 100 milli-CPU
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"

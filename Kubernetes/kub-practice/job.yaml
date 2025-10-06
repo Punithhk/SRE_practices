@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi
+spec:
+  # schedule : "*/2 * * * *", make kind to CronJob
+  template:
+     spec:
+        containers:
+        - name: pi
+          image: docker.io/centos:7
+          args:
+          - /bin/sh
+          - -c
+          - echo "Printing one line is the job and got completed"
+        restartPolicy: Never
+  backoffLimit: 4
+
