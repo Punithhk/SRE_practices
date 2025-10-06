@@ -7,5 +7,22 @@ pipeline {
       }
     }
 
+    stage('Checkfiles') {
+      parallel {
+        stage('Checkfiles') {
+          steps {
+            sh 'dir'
+          }
+        }
+
+        stage('npm initialize') {
+          steps {
+            sh 'cd backend/ && npm install '
+          }
+        }
+
+      }
+    }
+
   }
 }
