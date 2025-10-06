@@ -1,3 +1,7 @@
+
+Emptydir = temp storage 
+
+
 Pods 
 
  486  kubectl create deployment firstpod --image=registry.k8s.io/e2e-test-images/agnhost:2.39 -- /agnhost netexec --http-port=8080
@@ -411,3 +415,38 @@ Phases of Volume - Available, Bound, Released, Failed
 ========
 Pausing and Resuming a rollout of s 
 >>>>>>>> c127fb692a31c56f8e5f2d807b320c2784f89567:Kubernetes.txt
+
+
+StatefulSet - useful for deploying application like Kafka, MysQL, Redis, Zookeeper 
+workload API object to mmanage stateful application 
+
+Stateless appn go with Deployment or Replica set 
+
+It uses oridinal index to identify and ordering purpose. Deployed in sequential order and terminated in reverse ordinal order 
+
+podManagementPolicy Field - to adjust pod termination behavouir sequential or parrallel 
+
+kubectl get statefulset 
+kubectl scale sts web --replicas=5
+
+---------------------------------------------------------------
+
+NFS Storage 
+
+Pod Disruptions - PodDisruptionBudget (3 fields - .spec.selector, .spec.minAvailable, .spec.maxUnavailable)
+
+Resource Quota 
+
+ kubectl create -f ./resourcequota.yaml
+  765  vi resourceobj.yaml
+  766  ls -l
+  767  kubectl create -f resourceobj.yaml --namespace=myname
+  768  kubectl create -f resourceobj.yaml --namespace=mynamespace
+  769  vi resourceobj.yaml
+  770  kubectl create -f resourceobj.yaml --namespace=mynamespace
+  771  kubectl get quota --namespace=mynamespace
+  772  kubectl create quota test -
+  773  kubectl create quota test ---
+  774  kubectl create quota test --
+  775  kubectl describe quota --namespace=mynamespace
+

@@ -11,10 +11,10 @@ ARG NODE_VERSION=22.13.0
 FROM node:${NODE_VERSION}-alpine
 
 # Use production node environment by default.
-ENV NODE_ENV production
+# ENV NODE_ENV production
 
 
-WORKDIR /app
+WORKDIR /
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
@@ -25,7 +25,9 @@ WORKDIR /app
 #   npm ci --omit=devs
 
 # Run the application as a non-root user.
-COPY package.json package-lock.json
+COPY package*.json ./
+
+RUN npm install
 # Copy the rest of the source files into the image.
 COPY . .
 
@@ -33,4 +35,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application.
-CMD node src/index.cjs
+CMD ["node","./index.cjs"]
