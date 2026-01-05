@@ -156,4 +156,4 @@ type: Container
 
 Overcommit level - ratio between req/limits 
 
-Virtual Pod Autoscalar (VPA) - 
+Virtual Pod Autoscalar (VPA)

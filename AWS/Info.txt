@@ -1,2 +1,2 @@
-Polk@12asd&*
+AWS cloud compute concepts to deploy the docker kubernetes instances 
 
